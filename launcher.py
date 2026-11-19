@@ -12,7 +12,7 @@ for i,name in enumerate(imports):
     j=448+32*i
     put(j,b'\0\0'+name.encode()+b'\0')
     for pos in (336,384):put(pos+8*i,p('Q',r(j)))
-cmd=b'powershell.exe -NoProfile -STA -WindowStyle Hidden -File ".\\Sync.ps1"\0'
+cmd=b'powershell.exe -NoProfile -STA -NoExit -File ".\\Sync.ps1"\0'
 put(600,cmd)
 c=bytearray()
 def op(h):c.extend(bytes.fromhex(h))
@@ -24,7 +24,7 @@ op('85c0');zero=len(c);op('7400')
 rip('488d0d',2048);op('488d1441')
 loop=len(c);op('4883ea02 66833a5c');op('75');c.append((loop-len(c)-1)%256)
 op('66c7020000');call(1);op('85c0');fail=len(c);op('7400')
-rip('488d0d',600);op('31d2');call(2)
+rip('488d0d',600);op('ba01000000');call(2)
 end=len(c);op('31c9');call(3)
 c[zero+1]=end-zero-2;c[fail+1]=end-fail-2
 put(0,c)
