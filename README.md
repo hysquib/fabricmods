@@ -3,24 +3,24 @@
 玩家选择 PCL 实例的 mods 文件夹，即可按服主发布的清单下载缺少的模组、替换旧版。需要 64 位 Windows 和 Windows PowerShell 5.1。
 本仓库为私有仓库。服主可将整个 Client 文件夹压缩后发给朋友，玩家解压即可从下面第 2 步开始。下载模组的 HTTPS 地址需要能在玩家电脑上直接打开。
 
-## 玩家第一次使用
+## 从下载站安装（推荐）
+
+打开服主提供的 Pages 网址，下载 ZIP，完整解压后运行 ModSync.exe。站点下载包内含 server.txt，玩家无需登录 GitHub。每次向 main 的 data/mods 提交模组后，Pages 工作流会生成清单、下载包和网页。首次启用时在 Settings → Pages 选择 GitHub Actions。绑定自定义域名后重新运行 Publish mod download site，以更新下载包内的网址。
+
+## 从源码仓库直接运行
 
 1. 在仓库首页点 **Code → Download ZIP**，完整解压。关闭 Minecraft。
 2. 双击 Client/ModSync.exe，保持 Sync.ps1 与它同目录。
 3. 选择正在玩的 Fabric 1.21.1 实例里的 mods 文件夹。如果 PCL 开了版本隔离，路径通常类似 .minecraft/versions/实例名称/mods。
-4. 若出现地址输入框，粘贴服主给的 manifest.json 完整网址。
-5. 核对下载和备份列表，点 Yes。看到同步完成后，通过 PCL 启动原来的实例。以后服主更新模组时，再运行一次。
+4. 默认数据源是本仓库 main 分支的 data/mods。同步器先在临时目录下载有变化的文件，检查 Fabric ID 和 Git 文件哈希，再显示安装和备份预览。确认后更新游戏目录。
+5. 本仓库为私有。玩家需要自己的仓库读取权限；在 Windows 安装 GitHub CLI，首次使用前运行 `gh auth login --hostname github.com` 并登录有权限的账号。已设置只读 GH_TOKEN 的用户也可直接运行。请勿把令牌随客户端分发。
+6. 以后每次更新重新运行即可。若提示数据源为空，表示服主尚未放入模组。
 
-## 服主发布模组
+## 服主发布
 
-1. 安装 Python 3.8 或更高版本，在 publish.py 旁创建 client-mods 文件夹。放入玩家需要的 Fabric 1.21.1 JAR 和依赖。程序跳过带 server 专用标记的模组，其他文件请服主自行核对。
-2. 在仓库根目录打开终端运行：
-   ```sh
-   python publish.py client-mods release-001
-   ```
-3. 将 release-001 里的 manifest.json 和所有 JAR 发布到同一个可直连的 HTTPS 目录。只发布允许再分发的模组。清单地址须能直接显示 JSON，每个 JAR 须能直接下载。
-4. 把清单网址发给玩家，或将网址单独写一行保存为 Client/server.txt 后分发 Client 文件夹。玩家端无需安装 Python。
-5. 更新时，在 client-mods 中用新版替换旧版，重新生成到新目录 release-002。若使用固定下载地址，先上传新版 JAR，最后替换该地址的 manifest.json，已有玩家即可沿用原地址。
+在 [data/mods](data/mods/) 放入可分发的 Fabric 1.21.1 客户端 JAR 及依赖。同一 ID 仅保留一个版本，将旧版移除和新版加入一起提交到 main。仓库中的文件就是发布版本，无需生成清单。服务端专用模组请勿放入。客户端只扫描该目录第一层。
+
+如沿用原有 HTTPS 清单，请在 Client/server.txt 写入 manifest.json 完整网址，该配置优先于 GitHub。publish.py 仍可用于生成这种清单。
 
 ## 备份、恢复和排错
 
